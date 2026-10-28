@@ -86,10 +86,11 @@ Feature branches and pull requests still generate documentation but cannot
 overwrite the published site. GitHub-hosted Linux runners install Doxygen
 through Ubuntu's package manager; no personal access token is required.
 
-**The delivered local package has not been run on GitHub Actions or published
-to GitHub Pages.** Successful local checks do not substitute for remote CI in
-the assignment rubric. Submit the public repository and actual successful
-workflow/documentation URLs only after checking them yourself.
+**Remote validation completed:** [CI run #1](https://github.com/hubao4060-ship-it/quant-starter/actions/runs/40720263852)
+passed the Release build, all 16 unit tests, benchmarks and documentation
+publication. [The Doxygen site](https://hubao4060-ship-it.github.io/quant-starter/)
+is publicly available. The benchmark console log and JSON artifact are in
+the linked workflow run. Subsequent pushes automatically repeat the checks.
 
 ## API behavior
 
