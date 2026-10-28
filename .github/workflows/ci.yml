@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes doxygen
+      - name: Configure Release build
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --parallel 4
+      - name: Run unit tests
+        run: ctest --test-dir build --output-on-failure --no-tests=error
+      - name: Run example
+        run: ./build/quant_demo
+      - name: Run benchmark
+        run: >-
+          ./build/quant_benchmark
+          --benchmark_min_time=0.1s
+          --benchmark_repetitions=3
+          --benchmark_out=build/benchmark.json
+          --benchmark_out_format=json
+      - name: Generate Doxygen documentation
+        run: cmake --build build --target docs
+      - name: Save benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: build/benchmark.json
+          if-no-files-found: error
+      - name: Save HTML documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-html
+          path: build/docs/html
+          if-no-files-found: error
+      - name: Package Pages documentation
+        if: >-
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+          && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/docs/html
+
+  deploy:
+    if: >-
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Publish documentation
+        id: deployment
+        uses: actions/deploy-pages@v4
