@@ -44,11 +44,15 @@ for single- and multi-configuration generators.
 
 ## Online documentation
 
-Before upload, run `python scripts/set_repository.py OWNER/REPOSITORY` to put
-your actual Pages link in the root README. Enable Settings > Pages > Source >
-GitHub Actions in the public repository. The initial local package has no
-published documentation URL; the Markdown file you are reading is the source
-page that Doxygen turns into the documentation home page.
+The published API documentation is available at
+[hubao4060-ship-it.github.io/quant-starter](https://hubao4060-ship-it.github.io/quant-starter/).
+[CI run #1](https://github.com/hubao4060-ship-it/quant-starter/actions/runs/40720263852)
+verified the build, all 16 unit tests, benchmark execution and Pages deployment.
+
+For a fork or a new copy, run `python scripts/set_repository.py OWNER/REPOSITORY`
+to update the root README links, then enable Settings > Pages > Source > GitHub
+Actions for your own repository. Doxygen turns this Markdown source into the
+documentation home page.
 
 See the public API under **Namespaces > quant** for parameter and exception
 contracts.
